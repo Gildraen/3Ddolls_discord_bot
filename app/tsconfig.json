@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "target": "ES6",
+        "moduleResolution": "Node",
+        "outDir": "dist",
+        "baseUrl": "./src",
+        "declaration": true,
+        "noImplicitAny": true,
+        "sourceMap": true,
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "paths": {
+            "@config/*": ["domain/config/*"],
+            "@event/*": ["domain/event/*"],
+            "@handler/*": ["domain/handler/*"],
+            "@module/*": ["module/*"],
+            "@domain/*": ["domain/*"],
+            "@db/*": ["db/*"]
+        }
+    },
+    "exclude": [
+        "node_modules",
+        "dist"
+    ],
+}

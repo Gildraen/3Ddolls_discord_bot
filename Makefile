@@ -1,14 +1,17 @@
 ## Development
-
+install:
+	docker compose run app yarn install
+	
 start:
 	docker compose run app yarn build
 	docker compose run app yarn start
 
 ## Deployment
-push: 
+push:
+	docker build -t ${repo} .
 	docker compose run aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 061542561368.dkr.ecr.eu-west-3.amazonaws.com
-	docker tag test-bot 061542561368.dkr.ecr.eu-west-3.amazonaws.com/test-bot
-	docker push 061542561368.dkr.ecr.eu-west-3.amazonaws.com/test-bot
+	docker tag ${repo} 061542561368.dkr.ecr.eu-west-3.amazonaws.com/${repo}
+	docker push 061542561368.dkr.ecr.eu-west-3.amazonaws.com/${repo}
 
 start-task:
 	docker compose run aws run-task --task-definition arn:aws:ecs:eu-west-3:061542561368:task-definition/test-bot:1

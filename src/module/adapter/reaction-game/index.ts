@@ -34,7 +34,6 @@ export default class ReactionGameModule implements ModuleInterface {
                 components: [row]
             }
         ).then((message: InteractionResponse) => {
-            console.log(1)
             this.pointsManager.createGame(message)
             const collector = message.createMessageComponentCollector({ componentType: ComponentType.Button, filter: () => { return true }, time: 60000 })
             collector.on(CollectorEvent.COLLECT, (event: ButtonInteraction) => {
@@ -52,8 +51,7 @@ export default class ReactionGameModule implements ModuleInterface {
                 })
             })
             collector.on(CollectorEvent.END, (collected) => {
-                console.log(`Collected ${collected.size} items`)
-                console.log(this.pointsManager)
+                this.pointsManager.endGame(message)
                 interaction.followUp(
                     {
                         content: "Jeu de réaction terminé, restez à l'affut pour le prochain !",

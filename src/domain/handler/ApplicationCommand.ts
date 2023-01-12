@@ -16,13 +16,13 @@ export default class ApplicationCommandHandler {
     }
 
     deploy() {
-        const rest = new REST({ version: '10' }).setToken(Config.TOKEN);
+        const rest = new REST({ version: '10' }).setToken(Config.BOT.token);
         const slashCommands: RESTPostAPIApplicationCommandsJSONBody[] = []
         this.commands.forEach((command) => {
             const slashCommand = command.getSlashCommand()
             slashCommands.push(slashCommand.toJSON())
         })
-        rest.put(Routes.applicationCommands(Config.CLIENT_ID), { body: slashCommands },).then((result) => {
+        rest.put(Routes.applicationCommands(Config.BOT.client_id), { body: slashCommands },).then((result) => {
         }).catch((err) => {
             console.log(err)
         }).finally(() => {

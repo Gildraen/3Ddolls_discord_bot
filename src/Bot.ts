@@ -16,7 +16,7 @@ export class Bot {
 
     constructor() {
         this.client = new Client({ intents: Config.INTENTS});
-        this.token = Config.TOKEN;
+        this.token = Config.BOT.token;
     }
     
     initEvents() {

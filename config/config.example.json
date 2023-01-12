@@ -1,0 +1,7 @@
+{
+    "modules": ["emira-conversation", "reaction-game"],
+    "bot": {
+        "client_id": "xxx",
+        "token": "xxx"
+    }
+}

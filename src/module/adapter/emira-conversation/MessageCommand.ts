@@ -7,6 +7,7 @@ import * as readline from "readline";
 import path from "path";
 import { SequenceMatcher } from "difflib";
 import { Config } from "./Config";
+import * as QR from "./QR.txt"
 
 
 export default class MessageCommand implements MessageCommandInterface {

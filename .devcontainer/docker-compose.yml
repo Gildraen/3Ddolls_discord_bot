@@ -1,4 +1,10 @@
 version: '3.9'
 services:
-  app:
+  dev:
+    image: node:18-slim
+    container_name: dev_bot
+    working_dir: /usr/app
+    user: node
+    volumes:
+      - ../:/usr/app
     command: /bin/sh -c "while sleep 1000; do :; done" 

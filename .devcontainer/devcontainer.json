@@ -2,10 +2,9 @@
 	"name": "app dev",
 
 	"dockerComposeFile": [
-		"../docker-compose.yml",
 		"docker-compose.yml"
 	],
-	"service": "app",
+	"service": "dev",
 	"workspaceFolder": "/usr/app",
 	"customizations": {
 		"vscode": {

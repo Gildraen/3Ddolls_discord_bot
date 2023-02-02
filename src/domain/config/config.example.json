@@ -3,5 +3,8 @@
     "bot": {
         "client_id": "xxx",
         "token": "xxx"
+    },
+    "open_ai":{
+        "api_key" : "xxx"
     }
 }

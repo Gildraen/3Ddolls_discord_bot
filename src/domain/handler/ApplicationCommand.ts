@@ -12,7 +12,12 @@ export default class ApplicationCommandHandler {
         if (command == null)
             return
         if (command.canExecute(interaction))
+        try {
             command.execute(interaction)
+        } catch (error) {
+            console.log(error)
+        }
+            
     }
 
     deploy() {

@@ -13,3 +13,11 @@ services:
     container_name: aws
     env_file:
       - .env
+
+  terraform:
+    image: hashicorp/terraform:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    env_file:
+      - .env

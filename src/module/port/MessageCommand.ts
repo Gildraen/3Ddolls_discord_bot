@@ -5,4 +5,5 @@ export default interface MessageCommandInterface {
     module: ModuleInterface
     startString: string
     execute(message: Message):void
+    canStart(message: Message):boolean
 }

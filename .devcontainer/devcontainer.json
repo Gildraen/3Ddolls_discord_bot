@@ -9,7 +9,9 @@
 	"customizations": {
 		"vscode": {
 			"extensions": [
-				"ms-vscode.vscode-typescript-next"
+				"ms-vscode.vscode-typescript-next",
+				"hashicorp.terraform",
+				"ms-azuretools.vscode-docker"
 			]
 		}
 	}

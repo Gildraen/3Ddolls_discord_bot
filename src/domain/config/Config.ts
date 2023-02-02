@@ -7,4 +7,5 @@ export default class Config {
     static INTENTS: number[] = [GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent, GatewayIntentBits.Guilds]
     static MODULES: string[] = config.modules
     static BOT = config.bot
+    static OPEN_AI = config.open_ai
 }

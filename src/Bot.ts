@@ -71,8 +71,9 @@ export class Bot {
     }
 
     initDataBase() {
-        return new Promise(() => {
-            this.database.connect()
+        return new Promise<void>((resolve, reject) => {
+            resolve()
+            // this.database.connect()
         })
     }
 

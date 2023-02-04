@@ -18,6 +18,6 @@ services:
     image: hashicorp/terraform:latest
     volumes:
       - .:/app
-    working_dir: /app
+    working_dir: /app/terraform
     env_file:
       - .env

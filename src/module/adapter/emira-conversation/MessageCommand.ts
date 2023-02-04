@@ -62,7 +62,14 @@ export default class MessageCommand implements MessageCommandInterface {
             message.reply(finalAnswer)
             if (nextCommand != "") {
                 const file = this.module.getPic(nextCommand)
-                message.channel.send({ files: [file] })
+                try {
+                    message.channel.send({ files: [file] })
+                } catch {
+                    const channel = this.module.bot.client.channels.cache.get(Config.QUESTION_CHANNEL_ID)
+                    if (channel && channel.isTextBased()) {
+                        channel.send(`Fichier manquant : ${file}`)
+                    }
+                }
             }
         } else {
             this.openAiService.send(text).then((result) => {

@@ -19,7 +19,7 @@
 # create-service:
 # 	docker compose run aws ecs create-service --desired-count 1 --cluster arn:aws:ecs:eu-west-3:061542561368:cluster/3ddols-bot --service-name test-bot --task-definition arn:aws:ecs:eu-west-3:061542561368:task-definition/test-bot:1
 
-DOCKER_IMAGE=bot_test
+DOCKER_IMAGE=3ddolls-bot
 
 build:
 	docker build -t $(DOCKER_IMAGE) .

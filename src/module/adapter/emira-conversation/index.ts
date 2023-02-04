@@ -4,6 +4,7 @@ import MessageCommand from "./MessageCommand";
 import ApplicationCommand from "./ApplicationCommand";
 import { ChatInputCommandInteraction } from "discord.js";
 import path from "path";
+import { Config } from "./Config";
 
 export default class EmiraConversationModule implements ModuleInterface {
     bot: Bot;
@@ -31,7 +32,14 @@ export default class EmiraConversationModule implements ModuleInterface {
             return
         }
         const file = this.getPic(type.value)
-        interaction.reply({ files: [file] })
+        try {
+            interaction.reply({ files: [file] })
+        } catch {
+            const channel = this.bot.client.channels.cache.get(Config.QUESTION_CHANNEL_ID)
+            if (channel && channel.isTextBased()) {
+                channel.send(`Fichier manquant : ${file}`)
+            }
+        }
     }
 
     getPic(type: string) {

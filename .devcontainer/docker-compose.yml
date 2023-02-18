@@ -1,10 +1,12 @@
 version: '3.9'
 services:
   dev:
-    image: node:18-slim
+    build: .
     container_name: dev_bot
     working_dir: /usr/app
-    user: node
     volumes:
       - ../:/usr/app
-    command: /bin/sh -c "while sleep 1000; do :; done" 
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    env_file:
+      - ../.env

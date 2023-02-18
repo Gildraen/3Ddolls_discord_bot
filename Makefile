@@ -19,7 +19,7 @@
 # create-service:
 # 	docker compose run aws ecs create-service --desired-count 1 --cluster arn:aws:ecs:eu-west-3:061542561368:cluster/3ddols-bot --service-name test-bot --task-definition arn:aws:ecs:eu-west-3:061542561368:task-definition/test-bot:1
 
-DOCKER_IMAGE=3ddolls-bot
+DOCKER_IMAGE=test_bot
 
 build:
 	docker build -t $(DOCKER_IMAGE) .
@@ -29,13 +29,13 @@ push: build
 	docker compose run aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 061542561368.dkr.ecr.eu-west-3.amazonaws.com
 	docker push 061542561368.dkr.ecr.eu-west-3.amazonaws.com/$(DOCKER_IMAGE):latest
 
-deploy: push
-	docker compose run terraform init
-	docker compose run terraform apply -auto-approve
+deploy:push
+	terraform -chdir=terraform init 
+	terraform -chdir=terraform apply -auto-approve
 
 clean:
-	docker rmi $(DOCKER_IMAGE)
-	docker compose run terraform destroy -auto-approve
+	# docker rmi $(DOCKER_IMAGE)
+	terraform -chdir=terraform destroy -auto-approve
 
 test:
 	docker compose run app yarn build_and_start

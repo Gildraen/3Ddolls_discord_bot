@@ -1,3 +1,3 @@
-variable bot_name {
-   type = string
+variable "BOT_NAME" {
+  type = string
 }

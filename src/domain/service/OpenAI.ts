@@ -1,29 +1,38 @@
 import Config from "@config/Config";
 import { Configuration, OpenAIApi } from "openai";
 
-export default class OpenAIService {
-    apiKey = Config.OPEN_AI.api_key
+export default class OpenAIService
+{
+    apiKey = Config.OPEN_AI.api_key;
 
-    send(message: string) {
-        return new Promise<string>((resolve, reject) => {
-            const configuration = new Configuration({
+    send ( message: string )
+    {
+        return new Promise<string>( ( resolve, reject ) =>
+        {
+            const configuration = new Configuration( {
                 apiKey: this.apiKey,
-            });
-            const openai = new OpenAIApi(configuration);
+            } );
+            const openai = new OpenAIApi( configuration );
 
             const endMsg = "\n Fin du message\n";
 
             const prompt = this.context + message + endMsg;
-            openai.createCompletion({
-                model: "text-davinci-002",
+            openai.createCompletion( {
+                model: "text-davinci-003",
                 prompt: prompt,
-            }).then((result) => {
-                const test = result.data.choices[0].text || ""
-                resolve(test)
-            }).catch((error) => {
-                reject(error)
-            });
-        })
+                max_tokens: 350,
+                temperature: 0.8,
+                stop: null
+            } ).then( ( result ) =>
+            {
+                console.log( result.data );
+                const test = result.data.choices[ 0 ].text || "";
+                resolve( test );
+            } ).catch( ( error ) =>
+            {
+                reject( error.response.data );
+            } );
+        } );
 
     }
 
@@ -125,5 +134,5 @@ export default class OpenAIService {
     Le jeu sera compatible avec des sextoys connectées masculin et féminin qui s'activerons en fonction des actions dans le jeu.
     
     Début du Message : 
-    `
+    `;
 }

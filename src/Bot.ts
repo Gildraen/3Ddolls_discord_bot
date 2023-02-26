@@ -1,4 +1,4 @@
-import { Client, InteractionType } from "discord.js";
+import { Client, InteractionType, Interaction } from "discord.js";
 import { ClientEvent } from "@domain/event";
 import { ApplicationCommandHandler, MessageComponentHandler } from "@domain/handler";
 import Config from "@config/Config";
@@ -19,11 +19,11 @@ export class Bot {
         this.token = Config.BOT.token;
     }
     
-    initEvents() {
+    initEvents()  {
         return new Promise((resolve, reject) => {
             this.client.on(ClientEvent.READY, () => this.finalizeReady());
-            this.client.on(ClientEvent.ERROR, e => console.error(e.message));
-            this.client.on(ClientEvent.INTERACTION_CREATE, (interaction) => {
+            this.client.on(ClientEvent.ERROR, (e: { message: any; }) => console.error(e.message));
+            this.client.on( ClientEvent.INTERACTION_CREATE, ( interaction: Interaction ) => {
                 switch (interaction.type) {
                     case InteractionType.ApplicationCommand:
                         this.applicationHandler.handle(interaction)
@@ -43,7 +43,7 @@ export class Bot {
                         break;
                 }
             })
-            this.client.on(ClientEvent.MESSAGE_CREATE, (message) => {
+            this.client.on(ClientEvent.MESSAGE_CREATE, (message: any) => {
                 this.messageCommandHandler.handle(message)
             });
             resolve(null)

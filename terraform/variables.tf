@@ -1,3 +1,5 @@
-variable "BOT_NAME" {
-  type = string
+variable "bots" {
+  type = map(object({
+    version = number
+  }))
 }

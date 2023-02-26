@@ -19,17 +19,18 @@
 # create-service:
 # 	docker compose run aws ecs create-service --desired-count 1 --cluster arn:aws:ecs:eu-west-3:061542561368:cluster/3ddols-bot --service-name test-bot --task-definition arn:aws:ecs:eu-west-3:061542561368:task-definition/test-bot:1
 
-DOCKER_IMAGE=test_bot
+DOCKER_IMAGE=3ddolls-emira
+DOCKER_VERSION=latest
 
 build:
 	docker build -t $(DOCKER_IMAGE) .
 
 push: build
-	docker tag $(DOCKER_IMAGE) 061542561368.dkr.ecr.eu-west-3.amazonaws.com/$(DOCKER_IMAGE):latest
+	docker tag $(DOCKER_IMAGE) 061542561368.dkr.ecr.eu-west-3.amazonaws.com/$(DOCKER_IMAGE):$(DOCKER_VERSION)
 	docker compose run aws ecr get-login-password --region eu-west-3 | docker login --username AWS --password-stdin 061542561368.dkr.ecr.eu-west-3.amazonaws.com
-	docker push 061542561368.dkr.ecr.eu-west-3.amazonaws.com/$(DOCKER_IMAGE):latest
+	docker push 061542561368.dkr.ecr.eu-west-3.amazonaws.com/$(DOCKER_IMAGE):$(DOCKER_VERSION)
 
-deploy:push
+deploy: push
 	terraform -chdir=terraform init 
 	terraform -chdir=terraform apply -auto-approve
 
@@ -39,3 +40,12 @@ clean:
 
 test:
 	docker compose run app yarn build_and_start
+
+check:
+	terraform -chdir=terraform plan
+
+init:
+	terraform -chdir=terraform init
+
+apply:
+	terraform -chdir=terraform apply -auto-approve

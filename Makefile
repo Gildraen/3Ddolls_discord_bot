@@ -39,7 +39,7 @@ clean:
 	terraform -chdir=terraform destroy -auto-approve
 
 test:
-	docker compose run app yarn build_and_start
+	yarn build_and_start
 
 check:
 	terraform -chdir=terraform plan

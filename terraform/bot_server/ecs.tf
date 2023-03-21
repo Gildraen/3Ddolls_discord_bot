@@ -10,8 +10,16 @@ resource "aws_ecs_task_definition" "bot_app" {
   container_definitions = jsonencode([
     {
       name   = var.bot_name
-      image  = "${aws_ecr_repository.bot_app.repository_url}:${var.image_version}"
+      image  = "${aws_ecr_repository.bot_app.repository_url}:${var.image_version}@${data.aws_ecr_image.bot_app.image_digest}"
       memory = 128
+      logConfiguration = {
+        logDriver = "awslogs",
+        options = {
+          "awslogs-group"         = aws_cloudwatch_log_group.bot_app.name,
+          "awslogs-region"        = "eu-west-3",
+          "awslogs-stream-prefix" = var.bot_name
+        }
+      }
     }
   ])
 }

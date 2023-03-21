@@ -18,6 +18,19 @@ resource "aws_iam_role" "task_role" {
   }
 }
 
+# data "aws_iam_policy_document" "task_role_policy" {
+#   statement {
+#     effect = "Allow"
+#     actions = [
+#       "s3:Get*",
+#       "s3:List*",
+#     ]
+#     resources = [
+#       "arn:aws:s3:::gildraen-bot/*",
+#     ]
+#   }
+# }
+
 data "aws_iam_policy_document" "task_role_policy" {
   statement {
     effect = "Allow"
@@ -26,7 +39,7 @@ data "aws_iam_policy_document" "task_role_policy" {
       "s3:List*",
     ]
     resources = [
-      "arn:aws:s3:::my-bucket/*",
+      "*",
     ]
   }
 }

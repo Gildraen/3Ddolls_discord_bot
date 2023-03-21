@@ -4,7 +4,8 @@
         "target": "ES6",
         "moduleResolution": "Node",
         "outDir": "dist",
-        "baseUrl": "./src",
+        "baseUrl": ".",
+        "rootDir": "src",
         "declaration": true,
         "noImplicitAny": true,
         "sourceMap": true,
@@ -19,7 +20,8 @@
             "@handler/*": ["domain/handler/*"],
             "@module/*": ["module/*"],
             "@domain/*": ["domain/*"],
-            "@db/*": ["db/*"]
+            "@db/*": ["db/*"],
+            "@lib/*": ["lib/*"]
         }
     },
     "exclude": [

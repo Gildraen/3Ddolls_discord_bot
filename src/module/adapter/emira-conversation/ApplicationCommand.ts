@@ -1,6 +1,7 @@
-import { ApplicationCommandInterface } from "@module/port";
+import { ApplicationCommandInterface } from "../../port";
 import EmiraConversationModule from ".";
-import { SlashCommandBuilder, CommandInteraction, CacheType, ChatInputCommandInteraction } from "discord.js";
+import { SlashCommandBuilder, CommandInteraction, CacheType, ChatInputCommandInteraction, SlashCommandStringOption } from "discord.js";
+import { ImgType } from './ImgHandler';
 
 export default class ApplicationCommand implements ApplicationCommandInterface
 {
@@ -18,12 +19,13 @@ export default class ApplicationCommand implements ApplicationCommandInterface
         const slashCommand = new SlashCommandBuilder();
         slashCommand.setName( this.name );
         slashCommand.setDescription( this.description );
-        slashCommand.addStringOption( option =>
-            option.setName( 'type' )
-                .setDescription( 'Select type of picture' )
-                .setRequired( true )
-                .addChoices( { name: "Nude", value: "nude" } )
-        );
+        // I want a mapper here from ImgType to {name, value}
+        const option = new SlashCommandStringOption()
+        option.setName( 'type' ).setDescription('Select type of picture').setRequired(true)
+        Object.entries( ImgType ).map( ( [ key, value ] ) => {
+            option.addChoices( {name:key,value:value} );
+        } );
+        slashCommand.addStringOption(option);
         return slashCommand;
     }
     execute ( interaction: ChatInputCommandInteraction ): void

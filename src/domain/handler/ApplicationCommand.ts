@@ -1,6 +1,6 @@
-import Config from "@config/Config";
-import ApplicationCommandInterface from "@module/port/ApplicationCommand";
+import ApplicationCommandInterface from "../../module/port/ApplicationCommand";
 import { CommandInteraction, Interaction, REST, RESTPostAPIApplicationCommandsJSONBody, Routes } from "discord.js";
+import { Config, RepositoryType } from '../config/AppConfig';
 
 export default class ApplicationCommandHandler
 {
@@ -21,25 +21,25 @@ export default class ApplicationCommandHandler
                 command.execute( interaction );
             } catch ( error )
             {
-                console.log( error );
+                console.log( JSON.stringify(error) );
             }
 
     }
 
     deploy ()
     {
-        const rest = new REST( { version: '10' } ).setToken( Config.BOT.token );
+        const rest = new REST( { version: '10' } ).setToken( Config.getRepositoryByType( RepositoryType.COMMUNICATION ).properties.token );
         const slashCommands: RESTPostAPIApplicationCommandsJSONBody[] = [];
         this.commands.forEach( ( command ) =>
         {
             const slashCommand = command.getSlashCommand();
             slashCommands.push( slashCommand.toJSON() );
         } );
-        rest.put( Routes.applicationCommands( Config.BOT.client_id ), { body: slashCommands }, ).then( ( result ) =>
+        rest.put( Routes.applicationCommands( Config.getRepositoryByType( RepositoryType.COMMUNICATION ).properties.client_id ), { body: slashCommands }, ).then( ( result ) =>
         {
         } ).catch( ( err ) =>
         {
-            console.log( err );
+            console.log( JSON.stringify( err) );
         } ).finally( () =>
         {
         } );

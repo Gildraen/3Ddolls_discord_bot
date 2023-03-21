@@ -1,11 +1,10 @@
-import { ModuleInterface } from "@module/port";
-import MessageCommandInterface from "@module/port/MessageCommand";
-import { Message } from "discord.js";
+import MessageCommandInterface from "../../port/MessageCommand";
+import { Message, TextChannel } from "discord.js";
 import EmiraConversationModule from ".";
 import { SequenceMatcher } from "difflib";
 import { Config } from "./Config";
 import qrFile from "./QR.json";
-import OpenAIService from "@domain/service/OpenAI";
+import OpenAIService from "../../../domain/service/OpenAI";
 
 
 export default class MessageCommand implements MessageCommandInterface
@@ -23,12 +22,20 @@ export default class MessageCommand implements MessageCommandInterface
     canStart ( message: Message<boolean> ): boolean
     {
         if ( message.author.bot )
+        {
             return false;
+        }
         const firstWord = message.content.split( ' ' )[ 0 ].toLowerCase();
         if ( firstWord == this.startString )
+        {
+
             return true;
+        }
         if ( message.channelId == this.freeChannelId )
+        {
+
             return true;
+        }
         return false;
     }
     execute ( message: Message<boolean> ): void
@@ -67,24 +74,33 @@ export default class MessageCommand implements MessageCommandInterface
             } );
 
         } );
-        if ( finalAnswer != "" )
+        if ( finalAnswer == "" )
         {
-            message.reply( finalAnswer );
+            message.reply( finalAnswer ).catch( ( err ) =>
+            {
+                console.log( JSON.stringify( err ) );
+            } );
             if ( nextCommand != "" )
             {
                 // surround next line with try catch to avoid crash
                 const file = this.module.imgHandler.getImg( nextCommand ).then( ( result ) =>
                 {
-                    message.channel.send( { files: [ result ] } ).catch( ( error ) =>
+                    ( message.channel as TextChannel ).send( { files: [ result ] } ).catch( () =>
                     {
                         const channel = this.module.bot.client.channels.cache.get( Config.QUESTION_CHANNEL_ID );
-                        if ( channel && channel.isTextBased() )
+                        try
                         {
-                            channel.send( `Fichier manquant : ${ file }` );
+                            // Hack because there is no way to check if channel is TextChannel
+                            ( channel as TextChannel ).send( `Fichier manquant : ${ file }` );
+                        }
+                        catch ( error )
+                        {
+                            console.log( JSON.stringify( error ) );
                         }
                     }
                     );
-                } );
+                } )
+                    .catch( ( error ) => console.log( JSON.stringify( error ) ) );
             }
         } else
         {
@@ -92,14 +108,20 @@ export default class MessageCommand implements MessageCommandInterface
             {
                 message.reply( result );
                 const channel = this.module.bot.client.channels.cache.get( Config.QUESTION_CHANNEL_ID );
-                if ( channel && channel.isTextBased() )
+                try
                 {
-                    channel.send( `Nouvelle question posée à Emira : ${ text } - Réponse de OpenAI : ${ result }` );
+                    // Hack because there is no way to check if channel is TextChannel
+                    ( channel as TextChannel ).send( `Nouvelle question posée à Emira : ${ text } - Réponse de OpenAI : ${ result }` );
                 }
+                catch ( error )
+                {
+                    console.log( JSON.stringify( error ) );
+                }
+
                 qrFile.push( { "question": text, "answer": result, "command": "" } );
             } ).catch( ( error ) =>
             {
-                console.log( error );
+                console.log( JSON.stringify( error ) );
             } );
 
         }

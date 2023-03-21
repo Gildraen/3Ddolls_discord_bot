@@ -1,11 +1,11 @@
-import { Bot } from "Bot";
-import ModuleInterface from "@module/port/Module";
+import { Bot } from "../../../Bot";
+import ModuleInterface from "../../port/Module";
 import MessageCommand from "./MessageCommand";
 import ApplicationCommand from "./ApplicationCommand";
-import { ChatInputCommandInteraction } from "discord.js";
+import { ChatInputCommandInteraction, TextChannel } from "discord.js";
 import path from "path";
 import { Config } from "./Config";
-import { ImgHandler } from './img';
+import { ImgHandler } from './ImgHandler';
 
 export default class EmiraConversationModule implements ModuleInterface
 {
@@ -45,11 +45,15 @@ export default class EmiraConversationModule implements ModuleInterface
             interaction.reply( { files: [ "file" ] } );
         } catch {
             const channel = this.bot.client.channels.cache.get( Config.QUESTION_CHANNEL_ID );
-            if ( channel && channel.isTextBased() )
+            try
             {
-                channel.send( `Fichier manquant : ${ file }` );
+                // Hack because there is no way to check if channel is TextChannel
+                ( channel as TextChannel ).send( `Fichier manquant : ${ file }` );
+            }
+            catch ( error )
+            {
+                console.log( JSON.stringify(error) );
             }
         }
     }
-
 }

@@ -1,6 +1,7 @@
-import { Bot } from "Bot";
+import { Bot } from "../../Bot";
 import Config from "./Config";
 
-export default interface ModuleInterface {
-    bot: Bot
+export default interface ModuleInterface
+{
+    bot: Bot;
 }

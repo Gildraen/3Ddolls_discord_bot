@@ -24,7 +24,7 @@ export default class ApplicationCommand implements ApplicationCommandInterface
         return slashCommand;
     }
 
-    execute ( interaction: CommandInteraction ): void
+    async execute ( interaction: CommandInteraction ): Promise<void>
     {
         this.module.createNewReactionMessage( interaction );
     }

@@ -10,9 +10,14 @@ export default class MessageCommandHandler
     {
         this.commands.forEach( element =>
         {
-            if ( element.canStart( message ) )
+            if ( element.canExecute( message ) )
             {
-                element.execute( message );
+                element.execute( message )
+                    .catch( error =>
+                    {
+                        console.log( error );
+                    }
+                    );
             }
         } );
     }

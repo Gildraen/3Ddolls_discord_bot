@@ -1,11 +1,11 @@
 import { BaseInteraction, CacheType, CommandInteraction, SlashCommandBuilder } from "discord.js";
+import CommandInterface from './Command';
 import ModuleInterface from "./Module";
 
-export default interface ApplicationCommandInterface {
-    name: string
-    description: string 
-    module: ModuleInterface
-    getSlashCommand(): SlashCommandBuilder
-    execute(interaction: CommandInteraction):void
-    canExecute(interaction: CommandInteraction): boolean;
+export default interface ApplicationCommandInterface extends CommandInterface
+{
+    getSlashCommand (): SlashCommandBuilder;
+
+    execute ( interaction: CommandInteraction ): Promise<void>;
+    canExecute ( interaction: CommandInteraction ): boolean;
 }

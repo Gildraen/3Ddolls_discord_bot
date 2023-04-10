@@ -20,15 +20,16 @@ export default class ApplicationCommand implements ApplicationCommandInterface
         slashCommand.setName( this.name );
         slashCommand.setDescription( this.description );
         // I want a mapper here from ImgType to {name, value}
-        const option = new SlashCommandStringOption()
-        option.setName( 'type' ).setDescription('Select type of picture').setRequired(true)
-        Object.entries( ImgType ).map( ( [ key, value ] ) => {
-            option.addChoices( {name:key,value:value} );
+        const option = new SlashCommandStringOption();
+        option.setName( 'type' ).setDescription( 'Select type of picture' ).setRequired( true );
+        Object.entries( ImgType ).map( ( [ key, value ] ) =>
+        {
+            option.addChoices( { name: key, value: value } );
         } );
-        slashCommand.addStringOption(option);
+        slashCommand.addStringOption( option );
         return slashCommand;
     }
-    execute ( interaction: ChatInputCommandInteraction ): void
+    async execute ( interaction: ChatInputCommandInteraction ): Promise<void>
     {
         this.module.sendPic( interaction );
     }

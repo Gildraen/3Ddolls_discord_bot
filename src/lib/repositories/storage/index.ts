@@ -27,5 +27,10 @@ export class StorageRepository implements Storage
     {
         throw new Error( "Method not implemented." );
     }
+
+    getText ( key: string ): Promise<string>
+    {
+        throw new Error( "Method not implemented." );
+    }
     type: RepositoryType = RepositoryType.STORAGE;
 }

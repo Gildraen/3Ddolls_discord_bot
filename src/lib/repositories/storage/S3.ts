@@ -57,6 +57,26 @@ export default class S3 extends StorageRepository
             return acc.concat( Array.from( new Uint8Array( chunk ) ) );
         }, [] ) ).buffer;
         const buffer = Buffer.from( arrayBuffer );
-        return buffer
+        return buffer;
+    }
+
+    async getText ( key: string ): Promise<string>
+    {
+        const command = new GetObjectCommand( { Bucket: this.properties.bucketName, Key: key } );
+        try
+        {
+            const response = await this.s3Client.send( command );
+
+            if ( !response.Body || response.Body == undefined )
+            {
+                throw new Error( "No body found in S3 response" );
+            }
+            return response.Body.transformToString();
+
+        } catch ( error )
+        {
+            console.log( "error" );
+            throw new Error( "Error while getting text from S3" );
+        }
     }
 }

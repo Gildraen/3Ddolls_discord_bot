@@ -5,10 +5,25 @@ export default class OpenAIService
 {
     apiKey = Config.getRepositoryByType( RepositoryType.AI ).properties.apiKey;
 
-    send ( message: string )
+    send ( context:string, message: string )
     {
         return new Promise<string>( ( resolve, reject ) =>
         {
+            if ( !this.apiKey )
+            {
+                reject( "No API key" );
+                return;
+            }
+            if ( !message )
+            {
+                reject( "No message" );
+                return;
+            }
+            if ( !context )
+            {
+                reject( "No context" );
+                return;
+            }
             const configuration = new Configuration( {
                 apiKey: this.apiKey,
             } );

@@ -1,8 +1,6 @@
 import { Client, InteractionType, Interaction } from "discord.js";
 import { ClientEvent } from "./domain/event";
 import { ApplicationCommandHandler, MessageComponentHandler } from "./domain/handler";
-import RepositoryInterface from "./db/port/repository";
-import Repository from "./db/adapter/sequelize/repository";
 import MessageCommandHandler from "./domain/handler/MessageCommand";
 import { Config } from './domain/config/AppConfig';
 import Lib from './lib';
@@ -83,15 +81,6 @@ export class Bot
         } );
     }
 
-    initDataBase ()
-    {
-        return new Promise<void>( ( resolve, reject ) =>
-        {
-            resolve();
-            // this.database.connect()
-        } );
-    }
-
     initLib ()
     {
         return new Promise<void>( ( resolve, reject ) =>
@@ -114,7 +103,7 @@ export class Bot
     connect ()
     {
         console.log( 'logging...' );
-        const promises = [ this.initEvents(), this.initModules(), this.initDataBase(), this.initLib() ];
+        const promises = [ this.initEvents(), this.initModules(), this.initLib() ];
         Promise.all( promises ).then( ( result ) =>
         {
             this.client.login( this.token );

@@ -5,10 +5,19 @@ import { SequenceMatcher } from "difflib";
 import { Config } from "./Config";
 import qrFile from "./QR.json";
 import OpenAIService from "../../../domain/service/OpenAI";
+import { StorageRepository } from '../../../lib/repositories/storage';
+import lib from '../../../lib';
+import { RepositoryType } from '../../../lib/types';
 
-
+type QRItem = {
+    question: string;
+    answer: string;
+    command: string;
+};
 export default class MessageCommand implements MessageCommandInterface
 {
+    name: string = "emira";
+    description: string = "Emira conversation";
     module: EmiraConversationModule;
     startString: string = "emira";
     floors = [ 0.9, 0.8 ];
@@ -19,7 +28,7 @@ export default class MessageCommand implements MessageCommandInterface
     {
         this.module = module;
     }
-    canStart ( message: Message<boolean> ): boolean
+    canExecute ( message: Message<boolean> ): boolean
     {
         if ( message.author.bot )
         {
@@ -38,7 +47,7 @@ export default class MessageCommand implements MessageCommandInterface
         }
         return false;
     }
-    execute ( message: Message<boolean> ): void
+    async execute ( message: Message<boolean> ): Promise<void>
     {
         const firstWord = message.content.split( ' ' )[ 0 ].toLowerCase();
         let text = message.content;
@@ -50,9 +59,26 @@ export default class MessageCommand implements MessageCommandInterface
             message.reply( "Si tu veux me parler, dis quelque chose !" );
             return;
         }
+        const finalItem = await this.checkAnswers( text );
+
+        if ( finalItem != null )
+        {
+            await this.sendAnswer( message, finalItem, text );
+        } else
+        {
+            await this.sendAIAnswer( message, text );
+        }
+
+
+
+    }
+
+    async checkAnswers ( text: string ): Promise<QRItem | null>
+    {
+        const qrFile = await lib.getRepository<StorageRepository>( RepositoryType.STORAGE ).getText( "modules/emira-conversation/ai/QR.json" );
+        const parsedQrFile: QRItem[] = JSON.parse( qrFile );
         let answerFound = false;
-        let finalAnswer = "";
-        let nextCommand = "";
+        let finalItem = null;
         this.floors.some( ( floor ) =>
         {
             if ( answerFound )
@@ -60,7 +86,7 @@ export default class MessageCommand implements MessageCommandInterface
                 return true;
             }
             let last_similitude = 0;
-            qrFile.forEach( ( item ) =>
+            parsedQrFile.forEach( ( item: QRItem ) =>
             {
                 // @ts-ignore There is no ratio() in type
                 const similitude = new SequenceMatcher( null, text, item.question ).ratio();
@@ -68,65 +94,50 @@ export default class MessageCommand implements MessageCommandInterface
                 {
                     last_similitude = similitude;
                     answerFound = true;
-                    finalAnswer = item.answer;
-                    nextCommand = item.command || "";
+                    finalItem = item;
                 }
             } );
 
         } );
-        if ( finalAnswer == "" )
-        {
-            message.reply( finalAnswer ).catch( ( err ) =>
-            {
-                console.log( JSON.stringify( err ) );
-            } );
-            if ( nextCommand != "" )
-            {
-                // surround next line with try catch to avoid crash
-                const file = this.module.imgHandler.getImg( nextCommand ).then( ( result ) =>
-                {
-                    ( message.channel as TextChannel ).send( { files: [ result ] } ).catch( () =>
-                    {
-                        const channel = this.module.bot.client.channels.cache.get( Config.QUESTION_CHANNEL_ID );
-                        try
-                        {
-                            // Hack because there is no way to check if channel is TextChannel
-                            ( channel as TextChannel ).send( `Fichier manquant : ${ file }` );
-                        }
-                        catch ( error )
-                        {
-                            console.log( JSON.stringify( error ) );
-                        }
-                    }
-                    );
-                } )
-                    .catch( ( error ) => console.log( JSON.stringify( error ) ) );
-            }
-        } else
-        {
-            this.openAiService.send( text ).then( ( result ) =>
-            {
-                message.reply( result );
-                const channel = this.module.bot.client.channels.cache.get( Config.QUESTION_CHANNEL_ID );
-                try
-                {
-                    // Hack because there is no way to check if channel is TextChannel
-                    ( channel as TextChannel ).send( `Nouvelle question posée à Emira : ${ text } - Réponse de OpenAI : ${ result }` );
-                }
-                catch ( error )
-                {
-                    console.log( JSON.stringify( error ) );
-                }
+        return finalItem;
+    }
 
-                qrFile.push( { "question": text, "answer": result, "command": "" } );
-            } ).catch( ( error ) =>
-            {
-                console.log( JSON.stringify( error ) );
-            } );
+    async sendAnswer ( message: Message<boolean>, finalItem: QRItem, text: string ): Promise<void>
+    {
+        message.reply( finalItem.answer );
+        if ( finalItem.command == null || finalItem.command == "" )
+            return;
+        const file = await this.module.imgHandler.getImg( finalItem.command );
+        try
+        {
 
+            ( message.channel as TextChannel ).send( { files: [ file ] } );
+        } catch ( error )
+        {
+            const channel = this.module.bot.client.channels.cache.get( Config.QUESTION_CHANNEL_ID );
+            // Hack because there is no way to check if channel is TextChannel
+            ( channel as TextChannel ).send( `Fichier manquant : ${ file }` );
         }
     }
-    removeFirstWord ( str: string )
+
+    async sendAIAnswer ( message: Message<boolean>, text: string ): Promise<void>
+    {
+        const storageRepository = lib.getRepository<StorageRepository>( RepositoryType.STORAGE );
+        const aiContextPath = "modules/emira-conversation/ai/emira_context.txt";
+
+        const context = await storageRepository.getText( aiContextPath );
+        const result = await this.openAiService.send( context, text );
+        message.reply( result );
+        const channel = this.module.bot.client.channels.cache.get( Config.QUESTION_CHANNEL_ID );
+        if ( !channel ) throw new Error( "Question Channel not found" );
+
+        // Hack because there is no way to check if channel is TextChannel
+        ( channel as TextChannel ).send( `Nouvelle question posée à Emira : ${ text } - Réponse de OpenAI : ${ result }` );
+        qrFile.push( { "question": text, "answer": result, "command": "" } );
+    }
+
+
+    removeFirstWord ( str: string ): string
     {
         const indexOfSpace = str.indexOf( ' ' );
 
